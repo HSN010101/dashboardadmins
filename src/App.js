@@ -11,13 +11,15 @@ import {
 import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "YOUR_SECURED_API_KEY",
-  authDomain: "hellocafe-c7b2d.firebaseapp.com",
-  projectId: "hellocafe-c7b2d",
-  storageBucket: "hellocafe-c7b2d.appspot.com",
-  messagingSenderId: "531545421963",
-  appId: "1:531545421963:web:1419be80d8814efe47bc8e",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
