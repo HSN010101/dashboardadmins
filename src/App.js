@@ -6,36 +6,60 @@ import {
   query,
   orderBy,
   onSnapshot,
-  doc,
   addDoc,
 } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC7_vRqpXo_S0sNnRXeqR-vKvnT_X20tmc",
+  apiKey: "YOUR_SECURED_API_KEY",
   authDomain: "hellocafe-c7b2d.firebaseapp.com",
-  databaseURL: "https://console.firebase.google.com/u/0/project/hellocafe-c7b2d/database/hellocafe-c7b2d-default-rtdb/data/~2F",
   projectId: "hellocafe-c7b2d",
   storageBucket: "hellocafe-c7b2d.appspot.com",
   messagingSenderId: "531545421963",
   appId: "1:531545421963:web:1419be80d8814efe47bc8e",
-  measurementId: "G-N3W168ZN2B"
 };
-
-
-
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 const App = () => {
+  const [user, setUser] = useState(null); // Track logged-in user
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
-  // Fetch all conversations
+  // Handle login
+  const login = async () => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      setUser(userCredential.user);
+    } catch (error) {
+      console.error("Login failed:", error.message);
+    }
+  };
+
+  // Handle logout
+  const logout = async () => {
+    await signOut(auth);
+    setUser(null);
+    setConversations([]);
+    setMessages([]);
+  };
+
+  // Fetch conversations after login
   useEffect(() => {
+    if (!user) return;
+
     const q = query(collection(db, "Conversations"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map((doc) => ({
@@ -45,11 +69,11 @@ const App = () => {
       setConversations(data);
     });
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   // Fetch messages for the selected conversation
   useEffect(() => {
-    if (!selectedConversation) return;
+    if (!selectedConversation || !user) return;
 
     const q = query(
       collection(db, `Conversations/${selectedConversation.id}/Messages`),
@@ -63,7 +87,7 @@ const App = () => {
       setMessages(data);
     });
     return () => unsubscribe();
-  }, [selectedConversation]);
+  }, [selectedConversation, user]);
 
   // Send a new message
   const sendMessage = useCallback(async () => {
@@ -86,6 +110,32 @@ const App = () => {
     }
   }, [newMessage, selectedConversation]);
 
+  // Render login form if not logged in
+  if (!user) {
+    return (
+      <div style={{ padding: "20px", maxWidth: "400px", margin: "auto" }}>
+        <h2>Login</h2>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{ display: "block", width: "100%", marginBottom: "10px" }}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{ display: "block", width: "100%", marginBottom: "10px" }}
+        />
+        <button onClick={login} style={{ padding: "10px 20px" }}>
+          Login
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       {/* Sidebar for conversations */}
@@ -98,6 +148,9 @@ const App = () => {
         }}
       >
         <h2>Conversations</h2>
+        <button onClick={logout} style={{ marginBottom: "10px" }}>
+          Logout
+        </button>
         <ul>
           {conversations.map((convo) => (
             <li
