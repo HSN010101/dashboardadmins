@@ -11,13 +11,18 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
-  projectId: "YOUR_FIREBASE_PROJECT_ID",
-  storageBucket: "YOUR_FIREBASE_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_FIREBASE_MESSAGING_SENDER_ID",
-  appId: "YOUR_FIREBASE_APP_ID",
+  apiKey: "AIzaSyC7_vRqpXo_S0sNnRXeqR-vKvnT_X20tmc",
+  authDomain: "hellocafe-c7b2d.firebaseapp.com",
+  databaseURL: "https://console.firebase.google.com/u/0/project/hellocafe-c7b2d/database/hellocafe-c7b2d-default-rtdb/data/~2F",
+  projectId: "hellocafe-c7b2d",
+  storageBucket: "hellocafe-c7b2d.appspot.com",
+  messagingSenderId: "531545421963",
+  appId: "1:531545421963:web:1419be80d8814efe47bc8e",
+  measurementId: "G-N3W168ZN2B"
 };
+
+
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
